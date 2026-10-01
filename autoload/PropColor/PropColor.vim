@@ -16,11 +16,11 @@ export def RefreshAllColors()
 enddef
 
 export def InitColorListener()
-	if &buftype != '' || &buflisted == false 
+	if &buftype != '' || &buflisted == false
         return
     endif
 
-	if get(b:, 'PropColor_Enabled', false) == false 
+	if get(b:, 'PropColor_Enabled', false) == false
 		listener_add('ColorListener', bufnr('%'))
         b:PropColor_Enabled = true
 	endif
@@ -86,7 +86,7 @@ def ProcessSingleLine(lnum: number, active_extractors: list<dict<any>>, buffer: 
     endfor
 
     const combined_pattern = Utils.GetCombinedPattern()
-    
+
     var last_col = 0
     while true
         var res = matchstrpos(current, combined_pattern, last_col)
@@ -112,7 +112,7 @@ def ProcessSingleLine(lnum: number, active_extractors: list<dict<any>>, buffer: 
 			endif
 
             const col_tag = PREFIX .. hex[1 :]
-            
+
             # --- HIGHLIGHT ---
             if !has_key(known_types, col_tag)
                 if prop_type_get(col_tag) == {}
@@ -124,15 +124,15 @@ def ProcessSingleLine(lnum: number, active_extractors: list<dict<any>>, buffer: 
 
             # --- PROP ADD ---
             if style == 'both' || style == 'icon'
-                prop_add(lnum, starts + 1, {
-                    text: "● ", 
-                    type: col_tag, 
-                    id: COLOR_PROP_ID, 
+                prop_add(lnum, ends + 1, {
+                    text: "▣ ",
+                    type: col_tag,
+                    id: COLOR_PROP_ID,
                     priority: 10,
                     bufnr: buffer
                 })
             endif
-            
+
             if style == 'both' || style == 'text'
                 prop_add(lnum, starts + 1, {
                     type: col_tag,
@@ -151,7 +151,7 @@ enddef
 
 def ColorListener(buf: number, startline: number, endline: number, added: number, changes: list<any>)
     const ft = getbufvar(buf, '&filetype')
-    const active_extractors = Utils.GetExtractorsFor(ft) 
+    const active_extractors = Utils.GetExtractorsFor(ft)
 
     const last_line = line('$')
     for lnum in range(startline, endline + added - 1)
